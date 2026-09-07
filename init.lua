@@ -44,7 +44,7 @@ vim.o.smartcase = true
 vim.o.signcolumn = 'yes'
 
 -- Decrease update time
-vim.o.updatetime = 250
+vim.o.updatetime = 1000
 
 -- Decrease mapped sequence wait time
 vim.o.timeoutlen = 300
@@ -526,7 +526,6 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
 
-        stylua = {}, -- Used to format Lua code
 
         -- Special Lua Config, as recommended by neovim help docs
         lua_ls = {
@@ -568,6 +567,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         -- You can add other tools here that you want Mason to install
+        'stylua', -- Lua formatter
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -875,3 +875,16 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+--MU changes 2026-04-12
+vim.opt.autoread = true
+
+-- checktime only on focus/buffer-enter; CursorHold* removed (stat()s the file
+-- every updatetime ms, which stalls badly on /mnt/z CIFS files).
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+  pattern = "*",
+  command = "checktime",
+})
+
+
+
